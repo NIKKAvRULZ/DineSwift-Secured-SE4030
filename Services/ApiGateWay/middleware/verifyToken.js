@@ -1,22 +1,27 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-    // 1. Log every single request that hits the gateway
     console.log(`[GATEWAY] Intercepted request to: ${req.originalUrl}`);
 
-    // 2. Let auth routes pass
     if (req.originalUrl.startsWith('/api/auth')) {
         console.log(`[GATEWAY] Letting auth request pass through`);
         return next();
     }
 
-    // 3. Look for the token
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    
+    // Copilot Fix: Strictly require the "Bearer" scheme
+    if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
+        console.log(`[GATEWAY] BLOCKED: Missing or invalid authorization scheme`);
+        return res.status(401).json({ message: 'Access Denied: Missing or Invalid Bearer Token' });
+    }
 
-    if (!token) {
-        console.log(`[GATEWAY] BLOCKED: No token provided`);
-        return res.status(401).json({ message: 'Access Denied: No Token Provided' });
+    const token = authHeader.split(' ')[1];
+
+    // Copilot Fix: Prevent crashes if JWT_SECRET is missing from Gateway .env
+    if (!process.env.JWT_SECRET) {
+        console.error(`[GATEWAY] CRITICAL: JWT_SECRET is not defined in Gateway environment`);
+        return res.status(500).json({ message: 'Internal Server Error: Gateway Misconfiguration' });
     }
 
     try {
