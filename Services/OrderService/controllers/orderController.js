@@ -3,47 +3,169 @@ import Order from '../models/Order.js';
 // Create a new order
 export const createOrder = async (req, res) => {
   try {
-    const { 
-      customerId, 
-      restaurantId, 
-      items, 
-      totalAmount, 
-      status, 
-      paymentMethod, 
-      deliveryAddress,
-      phoneNumber,  // Ensure this is included
-      deliveryNotes,
-      customerDetails
-    } = req.body;
-
-    // Validate phone number
-    if (!phoneNumber || !/^\+?[1-9]\d{9,14}$/.test(phoneNumber)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Valid phone number is required' 
-      });
-    }
-
-    const order = new Order({
+    const {
       customerId,
       restaurantId,
       items,
       totalAmount,
-      status,
       paymentMethod,
       deliveryAddress,
-      phoneNumber,      // Make sure it's included here
+      phoneNumber,
+      deliveryNotes,
+      customerDetails
+    } = req.body;
+
+    // Validate required fields
+    if (
+      !customerId ||
+      typeof customerId !== "string" ||
+      !customerId.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid customerId is required"
+      });
+    }
+
+    if (
+      !restaurantId ||
+      typeof restaurantId !== "string" ||
+      !restaurantId.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid restaurantId is required"
+      });
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one order item is required"
+      });
+    }
+
+    if (
+      !phoneNumber ||
+      typeof phoneNumber !== "string" ||
+      !/^\+?[1-9]\d{9,14}$/.test(phoneNumber)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid phone number is required"
+      });
+    }
+
+    if (
+      !paymentMethod ||
+      !["card", "cash"].includes(paymentMethod)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment method must be either card or cash"
+      });
+    }
+
+    if (
+      !deliveryAddress ||
+      typeof deliveryAddress !== "string" ||
+      !deliveryAddress.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid delivery address is required"
+      });
+    }
+
+    // Validate each order item
+for (const item of items) {
+  if (!item || typeof item !== "object" || Array.isArray(item)) {
+    return res.status(400).json({
+      success: false,
+      message: "Each order item must be a valid object"
+    });
+  }
+
+  if (
+    !item.name ||
+    typeof item.name !== "string" ||
+    !item.name.trim()
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Each item must have a valid name"
+    });
+  }
+
+  if (
+    typeof item.price !== "number" ||
+    !Number.isFinite(item.price) ||
+    item.price <= 0
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Each item price must be greater than zero"
+    });
+  }
+
+  if (
+    !Number.isInteger(item.quantity) ||
+    item.quantity <= 0
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Each item quantity must be a positive integer"
+    });
+  }
+}
+
+    // Calculate the total on the server
+    const calculatedTotal = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    if (
+      typeof totalAmount !== "number" ||
+      !Number.isFinite(totalAmount) ||
+      totalAmount <= 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid totalAmount is required"
+      });
+    }
+
+    // Prevent client-side total manipulation
+    if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
+      return res.status(400).json({
+        success: false,
+        message: "Total amount does not match the order items"
+      });
+    }
+
+    const order = new Order({
+      customerId: customerId.trim(),
+      restaurantId: restaurantId.trim(),
+      items,
+      totalAmount: calculatedTotal,
+      // Status is assigned by the server
+      paymentMethod,
+      deliveryAddress: deliveryAddress.trim(),
+      phoneNumber,
       deliveryNotes,
       customerDetails
     });
 
     const savedOrder = await order.save();
+
     res.status(201).json(savedOrder);
   } catch (error) {
-    console.error('Error creating order:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Error creating order' 
+    console.error("Error creating order:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to create order"
     });
   }
 };
