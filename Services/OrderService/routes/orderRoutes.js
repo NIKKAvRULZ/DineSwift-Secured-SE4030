@@ -1,3 +1,4 @@
+import { authenticateToken } from "../middleware/authMiddleware.js";
 import express from 'express';
 import { 
     createOrder, 
@@ -10,6 +11,8 @@ import {
 } from '../controllers/orderController.js';
 
 const router = express.Router();
+// Protect all OrderService routes
+router.use(authenticateToken);
 
 // Create a new order
 router.post("/", createOrder);
