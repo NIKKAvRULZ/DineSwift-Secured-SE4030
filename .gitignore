@@ -1,5 +1,4 @@
 .qodo
 node_modules
 node_modules
-Services/ApiGateWay/.env
-Services/UserService/.env
+**/.env
