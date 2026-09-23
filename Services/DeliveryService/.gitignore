@@ -3,6 +3,11 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
 # Logs
 logs/
 *.log
