@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require('helmet');
 const http = require("http");
 const { Server } = require("socket.io");
 const deliveryRoutes = require("./routes/deliveryRoutes");
@@ -16,11 +17,12 @@ const io = new Server(server, {
 });
 
 // Middleware
+app.use(helmet());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  }),
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  })
 );
 app.use(express.json());
 
