@@ -1,7 +1,7 @@
-console.log("Loaded from .env:", require('dotenv').config());
+console.log("Loaded from .env:", require("dotenv").config());
 const dotenv = require("dotenv");
 const express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const helmet = require("helmet");
 const mongoose = require("mongoose");
 const notificationRoutes = require("./routes/notificationRoutes");
@@ -10,7 +10,13 @@ dotenv.config();
 
 const app = express();
 app.use(helmet());
-app.use(cors());
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  }),
+);
 
 app.use(express.json());
 
