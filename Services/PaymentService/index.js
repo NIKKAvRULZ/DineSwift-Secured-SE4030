@@ -14,20 +14,28 @@ console.log('MONGO_URI exists:', !!process.env.MONGO_URI);
 connectDB();
 
 const app = express();
-
 // Middleware
 app.use(cors());
 
-// Handle Stripe webhook raw body
-app.use('/api/payment/stripe/webhook', express.raw({ type: 'application/json' }));
+// Regular body parser for all routes EXCEPT the Stripe webhook
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/payment/stripe/webhook') {
+    return next();
+  }
 
-// Regular body parser for other routes
-app.use(express.json());
+  express.json()(req, res, next);
+});
+
 app.use(express.urlencoded({ extended: false }));
 
+// Payment routes
+app.use('/api/payment', paymentRoutes);
+
+// Stripe routes
+app.use('/api/payment/stripe', stripeRoutes);
 // Set up routes
 app.use('/api/payment', paymentRoutes);
-app.use('/api/payment/stripe', stripeRoutes);
+
 
 // Root route
 app.get('/', (req, res) => {
