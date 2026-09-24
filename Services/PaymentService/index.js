@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const paymentRoutes = require('./routes/paymentRoutes');
 const stripeRoutes = require('./routes/stripeRouter');
+const helmet = require('helmet');
 
 // Load environment variables
 dotenv.config();
@@ -16,6 +17,7 @@ connectDB();
 const app = express();
 // Middleware
 app.use(cors());
+app.use(helmet());
 
 // Regular body parser for all routes EXCEPT the Stripe webhook
 app.use((req, res, next) => {
