@@ -10,23 +10,28 @@ exports.register = async (req, res) => {
         await user.save();
         res.status(201).send('User Registered Successfully');
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).json({ message: "Registration failed" });
     }
 };
 
 exports.login = async (req, res) => {
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
+
+        // Basic payload validation
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
         const user = await User.findOne({ email });
-        
         if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         // Securely compare incoming password with database hash
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         const token = jwt.sign(
@@ -35,8 +40,9 @@ exports.login = async (req, res) => {
             { expiresIn: "1h" }
         );
        
-        res.json({ token });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(200).json({ token });
+    } catch (err) {
+        console.error("Login server error:", err);
+        return res.status(500).json({ message: "Internal server error" });
     }
 };

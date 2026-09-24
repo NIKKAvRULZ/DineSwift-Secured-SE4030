@@ -7,33 +7,21 @@ const {
 } = require('http-proxy-middleware');
 
 const verifyToken = require('./middleware/verifyToken');
-
 require('dotenv').config();
-
 const app = express();
 
 
-// ========================================
 // GLOBAL MIDDLEWARE
-// ========================================
-
 app.use(cors());
 app.use(express.json());
 
 
-// ========================================
 // JWT VERIFICATION
-// ========================================
-
 app.use(verifyToken);
 
 
-// ========================================
 // SERVICE URLS
-// ========================================
-
 const SERVICES = {
-
     USER_SERVICE:
         process.env.USER_SERVICE_URL ||
         'http://localhost:5001',
@@ -60,52 +48,34 @@ const SERVICES = {
 };
 
 
-// ========================================
 // USER / AUTH SERVICE
-// ========================================
-
 app.use(
     '/api/auth',
-
     createProxyMiddleware({
-
         target: SERVICES.USER_SERVICE,
-
         changeOrigin: true,
-
         pathRewrite: (path) => {
-
             const newPath = '/api/auth' + path;
-
             console.log(
-                `[GATEWAY] Rewriting ${path} -> ${newPath}`
+              `[GATEWAY] Rewriting ${path} -> ${newPath}`
             );
-
             return newPath;
         },
-
         on: {
-
             proxyReq: (proxyReq, req, res) => {
-
                 console.log(
-                    `[GATEWAY] Forwarding ${req.method} ${req.originalUrl}`
+                  `[GATEWAY] Forwarding ${req.method} ${req.originalUrl}`
                 );
-
                 fixRequestBody(proxyReq, req, res);
             },
-
             proxyRes: (proxyRes) => {
-
                 console.log(
-                    `[GATEWAY] User Service response: ${proxyRes.statusCode}`
+                  `[GATEWAY] User Service response: ${proxyRes.statusCode}`
                 );
             },
-
             error: (err) => {
-
                 console.error(
-                    `[GATEWAY] User Service proxy error: ${err.message}`
+                   `[GATEWAY] User Service proxy error: ${err.message}`
                 );
             }
         }
@@ -113,41 +83,35 @@ app.use(
 );
 
 
-// ========================================
 // RESTAURANT SERVICE
-// ========================================
-
 app.use(
     '/api/restaurants',
-
     createProxyMiddleware({
         target: SERVICES.RESTAURANT_SERVICE,
-        changeOrigin: true
+        changeOrigin: true,
+        pathRewrite: (path) => {
+            const newPath = '/api/restaurants' + (path === '/' ? '' : path);
+            console.log(`[GATEWAY] Rewriting restaurant path to: ${newPath}`);
+            return newPath;
+        }
     })
 );
-
-
-// ========================================
 // ORDER SERVICE
-// ========================================
-
 app.use(
     '/api/orders',
-
     createProxyMiddleware({
         target: SERVICES.ORDER_SERVICE,
-        changeOrigin: true
+        changeOrigin: true,
+        pathRewrite: {
+            '^/api/orders': '/api/orders'
+        }
     })
 );
 
 
-// ========================================
 // PAYMENT SERVICE
-// ========================================
-
 app.use(
     '/api/payment',
-
     createProxyMiddleware({
         target: SERVICES.PAYMENT_SERVICE,
         changeOrigin: true
@@ -155,13 +119,9 @@ app.use(
 );
 
 
-// ========================================
 // DELIVERY SERVICE
-// ========================================
-
 app.use(
     '/api/delivery',
-
     createProxyMiddleware({
         target: SERVICES.DELIVERY_SERVICE,
         changeOrigin: true
@@ -169,13 +129,9 @@ app.use(
 );
 
 
-// ========================================
 // NOTIFICATION SERVICE
-// ========================================
-
 app.use(
     '/api/notifications',
-
     createProxyMiddleware({
         target: SERVICES.NOTIFICATION_SERVICE,
         changeOrigin: true
@@ -183,10 +139,7 @@ app.use(
 );
 
 
-// ========================================
 // START SERVER
-// ========================================
-
 const PORT =
     process.env.GATEWAY_PORT ||
     process.env.PORT ||
