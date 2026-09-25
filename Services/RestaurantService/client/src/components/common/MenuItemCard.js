@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import StarIcon from '@mui/icons-material/Star';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import axios from 'axios';
+import axios from '../../api';
 import Notification from './Notification';
 import CommentIcon from '@mui/icons-material/Comment';
 

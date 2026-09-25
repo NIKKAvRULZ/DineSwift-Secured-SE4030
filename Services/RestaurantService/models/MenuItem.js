@@ -88,7 +88,9 @@ const MenuItemSchema = new mongoose.Schema({
         default: []
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { transform: (doc, value) => { delete value.ratings; return value; } },
+    toObject: { transform: (doc, value) => { delete value.ratings; return value; } }
 });
 
 module.exports = mongoose.model('MenuItem', MenuItemSchema);

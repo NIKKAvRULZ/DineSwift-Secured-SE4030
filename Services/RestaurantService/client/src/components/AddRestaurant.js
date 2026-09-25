@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StarIcon from '@mui/icons-material/Star';
-import axios from 'axios';
+import axios from '../api';
 
 const apiUrl = 'http://localhost:5002';
 

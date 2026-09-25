@@ -10,7 +10,7 @@ import {
     useTheme
 } from '@mui/material';
 import SearchBar from './common/SearchBar';
-import axios from 'axios';
+import axios from '../api';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AddIcon from '@mui/icons-material/Add';
