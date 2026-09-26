@@ -166,7 +166,7 @@ const AddMenuItem = () => {
                 category: formData.category,
                 price: parseFloat(formData.price),
                 isSpicy: formData.isSpicy,
-                discount: formData.discount,
+                discount: Number(formData.discount),
                 images: finalImages,
                 image: finalImages.length > 0 ? finalImages[0] : ''
             };

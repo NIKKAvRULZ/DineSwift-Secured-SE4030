@@ -60,6 +60,7 @@ before(async () => {
     stub(MenuItem.prototype, 'save', async function () { writes.push(this.toObject()); return this; });
     const app = express();
     app.use(express.json());
+    app.use(require('../middleware/validatePayload').jsonErrorHandler);
     app.use('/api', router);
     app.use((error, req, res, next) => res.status(500).json({ message: 'Internal server error' }));
     await new Promise(resolve => { server = app.listen(0, '127.0.0.1', resolve); });
@@ -112,29 +113,34 @@ test('other owners and unassigned legacy restaurants reject all existing-resourc
         }
     }
 });
+const restaurantBody = { name: 'Test', cuisine: 'Test', image: 'https://example.com/a.jpg',
+    deliveryTime: 20, minOrder: 0, location: { type: 'Point', coordinates: [80, 7] } };
+const menuBody = { name: 'Meal', category: 'Main', price: 10, images: ['https://example.com/a.jpg'] };
 test('owner can create, update and delete restaurant/menu resources', async () => {
-    const body = { name: 'Test', cuisine: 'Test', image: 'https://example.com/a.jpg',
-        images: ['https://example.com/a.jpg'], category: 'Main', price: 10, deliveryTime: 20,
-        minOrder: 0, location: { type: 'Point', coordinates: [80, 7] } };
     for (const [method, path] of mutations.slice(0, 6)) {
         reset();
+        const body = path.includes('menu-items') ? menuBody : restaurantBody;
         const result = await request(method, path, token(), body);
         assert.equal(result.status, method === 'POST' ? 201 : 200, `${method} ${path}`);
         assert.ok(writes.length > 0);
     }
 });
-test('create binds owner to token; updates cannot overwrite ownership, IDs or menu membership', async () => {
+test('create binds owner to token and mass-assignment attempts are rejected', async () => {
     reset();
-    await request('POST', '/restaurants', token(), { name: 'Test', owner: other, _id: other, menuItems: [other] });
+    assert.equal((await request('POST', '/restaurants', token(), restaurantBody)).status, 201);
     assert.equal(writes[0].owner.toString(), owner);
-    assert.notEqual(writes[0]._id.toString(), other);
-    assert.deepEqual(writes[0].menuItems, []);
+    for (const field of ['owner', '_id', 'menuItems', '$set', 'owner.id']) {
+        for (const [method, path] of [['POST', '/restaurants'], ['PUT', `/restaurants/${rid}`]]) {
+            reset();
+            assert.equal((await request(method, path, token(), {...restaurantBody, [field]: other})).status, 400);
+            assert.deepEqual(writes, []);
+        }
+    }
+});
+test('partial restaurant update does not reset an omitted rating', async () => {
     reset();
-    const result = await request('PUT', `/restaurants/${rid}`, token(), {
-        name: 'Updated', owner: other, 'owner.id': other, $set: { owner: other }, menuItems: [other], _id: other
-    });
-    assert.equal(result.status, 200);
-    assert.deepEqual(writes[0], { name: 'Updated', rating: 0 });
+    assert.equal((await request('PUT', `/restaurants/${rid}`, token(), {name: 'Updated'})).status, 200);
+    assert.deepEqual(writes[0], { name: 'Updated' });
 });
 test('rating/comment authors come from verified identity, never body userId', async () => {
     reset();
@@ -198,5 +204,37 @@ test('caller-supplied identity headers do not authenticate a request', async () 
     });
     await response.json();
     assert.equal(response.status, 401);
+    assert.deepEqual(writes, []);
+});
+
+test('invalid payloads on all four create/update routes never reach writes', async () => {
+    for (const [method, path] of [mutations[0], mutations[1], mutations[3], mutations[4]]) {
+        const valid = path.includes('menu-items') ? menuBody : restaurantBody;
+        for (const body of [[], {}, { ...valid, name: { $ne: null } }, { ...valid, unexpected: true },
+            { ...valid, [path.includes('menu-items') ? 'price' : 'deliveryTime']: -1 }]) {
+            reset();
+            const result = await request(method, path, token(), body);
+            assert.equal(result.status, 400, `${method} ${path}`);
+            assert.equal(result.body.stack, undefined);
+            assert.deepEqual(writes, []);
+        }
+    }
+});
+test('malformed JSON returns safe 400', async () => {
+    const response = await fetch(base + '/restaurants', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{broken'
+    });
+    assert.equal(response.status, 400);
+    assert.deepEqual(await response.json(), { message: 'Invalid JSON body' });
+});
+
+test('oversized JSON returns safe 413 before writes', async () => {
+    reset();
+    const response = await fetch(base + '/restaurants', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({name: 'x'.repeat(110000)})
+    });
+    assert.equal(response.status, 413);
+    assert.deepEqual(await response.json(), { message: 'Request body too large' });
     assert.deepEqual(writes, []);
 });

@@ -123,7 +123,7 @@ const AddRestaurant = () => {
             setLoading(true);
             setErrorMessage('');
             console.log('Submitting restaurant data:', formData);
-            const response = await axios.post(`${apiUrl}/api/restaurants`, formData);
+            const response = await axios.post(`${apiUrl}/api/restaurants`, { ...formData, rating: formData.rating ?? 0, deliveryTime: Number(formData.deliveryTime), minOrder: Number(formData.minOrder) });
             console.log('Restaurant added:', response.data);
             setSuccessMessage('Restaurant added successfully!');
             setLoading(false);

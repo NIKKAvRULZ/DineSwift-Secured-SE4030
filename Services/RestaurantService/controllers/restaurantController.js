@@ -1,3 +1,4 @@
+const { safeWriteError } = require('../middleware/validatePayload');
 const Restaurant = require('../models/Restaurant');
 const MenuItem = require('../models/MenuItem');
 
@@ -113,7 +114,7 @@ const addRestaurant = async (req, res) => {
         await restaurant.save();
         res.status(201).json(restaurant);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return safeWriteError(error, res);
     }
 };
 
@@ -122,10 +123,7 @@ const updateRestaurant = async (req, res) => {
     try {
         console.log('Updating restaurant with data:', req.body);
 
-        const updateData = {
-            ...restaurantFields(req.body),
-            rating: req.body.rating !== undefined ? req.body.rating : 0 // Ensure rating is included
-        };
+        const updateData = restaurantFields(req.body);
 
         const restaurant = await Restaurant.findByIdAndUpdate(
             req.params.id,
@@ -154,7 +152,7 @@ const updateRestaurant = async (req, res) => {
         res.json(restaurantObj);
     } catch (error) {
         console.error('Error updating restaurant:', error);
-        res.status(500).json({ error: error.message });
+        return safeWriteError(error, res);
     }
 };
 

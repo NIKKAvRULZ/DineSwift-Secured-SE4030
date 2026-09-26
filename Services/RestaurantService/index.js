@@ -24,6 +24,7 @@ app.use(
 
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(require('./middleware/validatePayload').jsonErrorHandler);
 
 // Add this near the top, after your imports but before app initialization
 const runStartupChecks = async () => {

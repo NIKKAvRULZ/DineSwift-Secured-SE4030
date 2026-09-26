@@ -195,7 +195,9 @@ const EditRestaurant = () => {
 
             const submitData = {
                 ...formData,
-                rating: Number(formData.rating), // Ensure rating is a number
+                rating: Number(formData.rating),
+                deliveryTime: Number(formData.deliveryTime),
+                minOrder: Number(formData.minOrder),
                 location: {
                     type: 'Point',
                     coordinates: [coordinates.longitude, coordinates.latitude]

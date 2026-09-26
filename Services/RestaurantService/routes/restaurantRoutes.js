@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken, requireRestaurantAdmin, requireOwner } = require('../middleware/authMiddleware');
+const { validatePayload } = require('../middleware/validatePayload');
 const restaurantOwner = [authenticateToken, requireRestaurantAdmin, requireOwner('restaurant')];
 const menuOwner = [authenticateToken, requireRestaurantAdmin, requireOwner('menu')];
 const {
@@ -59,47 +60,18 @@ router.get('/ping', (req, res) => {
 // Restaurant routes
 router.get('/restaurants', getAllRestaurants);
 router.get('/cuisines', getCuisineTypes);
-router.post('/restaurants', authenticateToken, requireRestaurantAdmin, addRestaurant);
+router.post('/restaurants', authenticateToken, requireRestaurantAdmin, validatePayload('restaurant'), addRestaurant);
 router.get('/restaurants/:id', getRestaurant);
-router.put('/restaurants/:id', restaurantOwner, updateRestaurant);
+router.put('/restaurants/:id', restaurantOwner, validatePayload('restaurant', true), updateRestaurant);
 router.delete('/restaurants/:id', restaurantOwner, deleteRestaurant);
 
-// Error handling middleware specifically for image URL issues
-const handleImageUrlErrors = (err, req, res, next) => {
-    if (err.message && err.message.includes('Invalid URL')) {
-        return res.status(400).json({ 
-            error: 'Invalid image URL provided. Please check the URL format.' 
-        });
-    }
-    next(err);
-};
-
-router.use(handleImageUrlErrors);
-
-// Menu item routes with proper error catching
-router.post('/restaurants/:restaurantId/menu-items', restaurantOwner, (req, res, next) => {
-    try {
-        // Validate image URLs if present
-        if (req.body.image) {
-            // Basic URL validation
-            new URL(req.body.image);
-        }
-        if (req.body.images && Array.isArray(req.body.images)) {
-            req.body.images.forEach(url => {
-                if (url) new URL(url);
-            });
-        }
-        addMenuItem(req, res, next);
-    } catch (error) {
-        next(error);
-    }
-});
+router.post('/restaurants/:restaurantId/menu-items', restaurantOwner, validatePayload('menu'), addMenuItem);
 
 // Menu item routes
 router.get('/menu-items', getAllMenuItems);
 router.get('/restaurants/:restaurantId/menu-items', getRestaurantMenuItems);
 router.get('/menu-items/:id', getMenuItem);
-router.put('/menu-items/:id', menuOwner, updateMenuItem);
+router.put('/menu-items/:id', menuOwner, validatePayload('menu', true), updateMenuItem);
 router.delete('/menu-items/:id', menuOwner, deleteMenuItem);
 
 // Rating and comment routes

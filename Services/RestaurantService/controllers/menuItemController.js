@@ -1,3 +1,4 @@
+const { safeWriteError } = require('../middleware/validatePayload');
 const MenuItem = require('../models/MenuItem');
 const Restaurant = require('../models/Restaurant');
 
@@ -137,7 +138,7 @@ const addMenuItem = async (req, res) => {
         res.status(201).json(menuItem);
     } catch (error) {
         console.error('Error adding menu item:', error);
-        res.status(500).json({ error: error.message });
+        return safeWriteError(error, res);
     }
 };
 
@@ -222,7 +223,7 @@ const updateMenuItem = async (req, res) => {
         res.json(updatedMenuItem);
     } catch (error) {
         console.error('Error updating menu item:', error);
-        res.status(500).json({ error: error.message });
+        return safeWriteError(error, res);
     }
 };
 
