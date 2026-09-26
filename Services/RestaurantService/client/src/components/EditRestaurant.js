@@ -19,7 +19,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
-import axios from 'axios';
+import axios from '../api';
 
 const apiUrl = 'http://localhost:5002';
 

@@ -19,7 +19,8 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [process.env.FRONTEND_URL || "http://localhost:5173",
+      process.env.RESTAURANT_MANAGER_URL].filter(Boolean),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
 );
@@ -78,6 +79,7 @@ app.use(
   createProxyMiddleware({
     target: SERVICES.RESTAURANT_SERVICE,
     changeOrigin: true,
+    on: { proxyReq: fixRequestBody },
     pathRewrite: (path) => {
       const newPath = "/api/restaurants" + (path === "/" ? "" : path);
       console.log(`[GATEWAY] Rewriting restaurant path to: ${newPath}`);

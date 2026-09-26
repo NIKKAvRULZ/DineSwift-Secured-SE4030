@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const restaurantSchema = new mongoose.Schema({
+  owner: { type: mongoose.Schema.Types.ObjectId, immutable: true, select: false, index: true },
   name: { type: String, required: true, trim: true },
   cuisine: { type: String, required: true, trim: true },
   image: { type: String, required: true },
@@ -34,7 +35,11 @@ const restaurantSchema = new mongoose.Schema({
     sunday: { open: String, close: String }
   },
   menuItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' }]
-}, { timestamps: true });
+}, {
+  timestamps: true,
+  toJSON: { transform: (doc, value) => { delete value.owner; return value; } },
+  toObject: { transform: (doc, value) => { delete value.owner; return value; } }
+});
 
 // Create a 2dsphere index for geospatial queries
 restaurantSchema.index({ location: "2dsphere" });

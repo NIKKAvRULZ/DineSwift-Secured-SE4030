@@ -28,7 +28,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import axios from 'axios';
+import axios from '../api';
 
 const apiUrl = 'http://localhost:5002';
 
