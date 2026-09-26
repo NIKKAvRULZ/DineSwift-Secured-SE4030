@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from '../api/http';
 
 const API_URL = 'http://localhost:5003/api';
 
 const cartService = {
   getCart: async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/cart`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -17,9 +17,9 @@ const cartService = {
 
   addToCart: async (itemData) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.post(`${API_URL}/cart/items`, itemData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -29,12 +29,12 @@ const cartService = {
 
   updateCartItem: async (itemId, quantity) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.put(
         `${API_URL}/cart/items/${itemId}`,
         { quantity },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         }
       );
       return response.data;
@@ -45,9 +45,9 @@ const cartService = {
 
   removeFromCart: async (itemId) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.delete(`${API_URL}/cart/items/${itemId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -57,9 +57,9 @@ const cartService = {
 
   clearCart: async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.delete(`${API_URL}/cart`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {

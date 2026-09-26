@@ -1,22 +1,16 @@
+const { accessToken } = require('../security/session.cjs');
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
     console.log(`[GATEWAY] Intercepted request to: ${req.originalUrl}`);
 
-    if (req.originalUrl.startsWith('/api/auth')) {
+    if ((req.path === '/api/auth' || req.path.startsWith('/api/auth/'))) {
         console.log(`[GATEWAY] Letting auth request pass through`);
         return next();
     }
 
-    const authHeader = req.headers['authorization'];
-    
-    // Copilot Fix: Strictly require the "Bearer" scheme
-    if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
-        console.log(`[GATEWAY] BLOCKED: Missing or invalid authorization scheme`);
-        return res.status(401).json({ message: 'Access Denied: Missing or Invalid Bearer Token' });
-    }
-
-    const token = authHeader.split(' ')[1];
+    const token = accessToken(req);
+    if (!token) return res.status(401).json({ message: 'Authentication required' });
 
     // Copilot Fix: Prevent crashes if JWT_SECRET is missing from Gateway .env
     if (!process.env.JWT_SECRET) {
@@ -25,7 +19,7 @@ const verifyToken = (req, res, next) => {
     }
 
     try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        const verified = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
         req.user = verified; 
         console.log(`[GATEWAY] PASSED: Token verified for user ${verified.id}`);
         next(); 

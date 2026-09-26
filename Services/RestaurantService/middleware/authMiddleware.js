@@ -1,19 +1,20 @@
+const { accessToken, csrfProtection } = require('../security/session.cjs');
 const jwt = require('jsonwebtoken');
 const Restaurant = require('../models/Restaurant');
 const MenuItem = require('../models/MenuItem');
 
 function authenticateToken(req, res, next) {
-    const match = /^Bearer ([^\s]+)$/i.exec(req.headers.authorization || '');
-    if (!match) return res.status(401).json({ message: 'Authentication required' });
+    const token = accessToken(req);
+    if (!token) return res.status(401).json({ message: 'Authentication required' });
     if (!process.env.JWT_SECRET) {
         return res.status(503).json({ message: 'Authentication unavailable' });
     }
     try {
-        const user = jwt.verify(match[1], process.env.JWT_SECRET, { algorithms: ['HS256'] });
+        const user = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
         if (!user || typeof user.id !== 'string' || !/^[a-f\d]{24}$/i.test(user.id) ||
             !Number.isInteger(user.exp)) throw new Error('Invalid identity');
         req.user = user;
-        return next();
+        return csrfProtection()(req, res, next);
     } catch {
         return res.status(401).json({ message: 'Invalid or expired access token' });
     }

@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from '../api/http';
 
 const API_URL = 'http://localhost:5001/api';
 
 const userService = {
   getProfile: async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/users/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -17,12 +17,12 @@ const userService = {
 
   updateProfile: async (userData) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.put(
         `${API_URL}/users/profile`,
         userData,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         }
       );
       return response.data;
@@ -33,12 +33,12 @@ const userService = {
 
   updatePassword: async (passwordData) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.put(
         `${API_URL}/users/password`,
         passwordData,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         }
       );
       return response.data;
@@ -49,9 +49,9 @@ const userService = {
 
   deleteAccount: async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.delete(`${API_URL}/users/account`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -61,9 +61,9 @@ const userService = {
 
   getAddresses: async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/users/addresses`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -73,12 +73,12 @@ const userService = {
 
   addAddress: async (addressData) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.post(
         `${API_URL}/users/addresses`,
         addressData,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         }
       );
       return response.data;

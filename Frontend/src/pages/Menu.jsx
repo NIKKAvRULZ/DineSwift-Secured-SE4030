@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axios from '../api/http';
 import { useCart } from '../context/CartContext'; // Import useCart
 import { useNavigate } from 'react-router-dom';
 import defaultItemImage from '../assets/placeholder-menu.png' 
@@ -216,9 +216,9 @@ const Menu = () => {
       console.log('Found pending ratings to sync:', pendingRatings);
       
       // Get token for API requests
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('No auth token found, skipping sync of pending ratings');
+
+      if (!user) {
+        console.log('No authenticated user found, skipping sync of pending ratings');
         return;
       }
       
@@ -243,7 +243,7 @@ const Menu = () => {
             menuItemId: itemId,
             rating: ratingData.rating,
             userId: ratingData.userId,
-            token
+
           });
           
           console.log(`Successfully synced rating for item ${itemId}:`, response);
@@ -303,12 +303,12 @@ const Menu = () => {
   useEffect(() => {
     const fetchRestaurantAndMenu = async () => {
       try {
-        const token = localStorage.getItem('token');
+
         const restaurantMenu =  await axios.get(`http://localhost:5002/api/restaurants/${id}/menu-items`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         })
         const restaurant =  await axios.get(`http://localhost:5002/api/restaurants/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         })
         console.log(restaurant.data)
         console.log(restaurantMenu.data)
@@ -533,8 +533,7 @@ const Menu = () => {
       }
       
       // If we're online, try to submit to server
-      const token = localStorage.getItem('token');
-      
+
       // Get user ID
       const userId = API.getUserId(user);
       
@@ -545,7 +544,7 @@ const Menu = () => {
           menuItemId: itemId,
           rating,
           userId,
-          token
+
         });
         
         console.log('Rating submitted successfully:', response);

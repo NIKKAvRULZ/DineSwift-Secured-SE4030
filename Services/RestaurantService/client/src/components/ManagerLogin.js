@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../api';
 import { Alert, Box, Button, TextField, Typography } from '@mui/material';
-import { setAccessToken } from '../api';
 
 export default function ManagerLogin({ onLogin }) {
     const [email, setEmail] = useState('');
@@ -15,8 +14,7 @@ export default function ManagerLogin({ onLogin }) {
         try {
             // Use the gateway so the manager requires only its own CORS origin there.
             const { data } = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-            if (typeof data.token !== 'string') throw new Error('Login did not return an access token');
-            setAccessToken(data.token);
+            if (!data.user) throw new Error('Unable to verify sign-in');
             setPassword('');
             onLogin();
         } catch (err) {

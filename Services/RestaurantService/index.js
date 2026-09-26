@@ -18,12 +18,14 @@ app.use(
   cors({
     origin: [process.env.FRONTEND_URL || "http://localhost:5173",
       process.env.RESTAURANT_MANAGER_URL].filter(Boolean),
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
 );
 
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(require('./security/session.cjs').csrfProtection());
 app.use(require('./middleware/validatePayload').jsonErrorHandler);
 
 // Add this near the top, after your imports but before app initialization

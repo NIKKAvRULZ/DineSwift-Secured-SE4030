@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios from './http';
 
 const BASE_URL = "http://localhost:5003/api";
 
 const orderService = {
-  createOrder: async (orderData, token) => {
+  createOrder: async (orderData) => {
     try {
       // Validate restaurantId presence
       if (!orderData.restaurantId) {
@@ -13,8 +13,7 @@ const orderService = {
       const response = await axios.post(`${BASE_URL}/orders`, orderData, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          }
       }); 
       return response.data;
     } catch (error) {
@@ -22,12 +21,11 @@ const orderService = {
     }
   },
 
-  getOrderById: async (orderId, token) => {
+  getOrderById: async (orderId) => {
     try {
       const response = await axios.get(`${BASE_URL}/orders/${orderId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          }
       });
       return response.data;
     } catch (error) {
@@ -37,15 +35,14 @@ const orderService = {
 
   cancelOrder: async (orderId) => {
     try {
-        const token = localStorage.getItem('token');
+
         const response = await axios.post(
             `${BASE_URL}/orders/${orderId}/cancel`,
             {},
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
+                    }
             }
         );
         return response.data;

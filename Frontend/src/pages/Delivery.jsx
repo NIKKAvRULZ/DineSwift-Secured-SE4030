@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useOrder } from '../context/OrderContext';
 import DeliveryMap from './DeliveryMap';
 import UpdateDeliveryStatus from './UpdateDeliveryStatus';
-import axios from 'axios';
+import axios from '../api/http';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { FaInfoCircle, FaPlus, FaMoon, FaSun, FaArrowRight, FaClock, FaMapMarkerAlt, FaUtensils, FaMapPin, FaDollarSign, FaSearch, FaTag, FaUser, FaPhone, FaEnvelope, FaTimes } from 'react-icons/fa';

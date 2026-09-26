@@ -1,6 +1,6 @@
+import http from '../../api/http';
 import React, { useState, useEffect } from 'react';
 import MenuItem from './MenuItem';
-import { useAuth } from '../../context/AuthContext';
 
 const FoodMenu = () => {
   const [items, setItems] = useState([]);
@@ -8,21 +8,11 @@ const FoodMenu = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/menu/items', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.message || 'Failed to fetch menu items');
-        }
+        const { data } = await http.get('http://localhost:5000/api/menu/items');
 
         setItems(data.items);
         // Extract unique categories
@@ -107,4 +97,4 @@ const FoodMenu = () => {
   );
 };
 
-export default FoodMenu; 
+export default FoodMenu;

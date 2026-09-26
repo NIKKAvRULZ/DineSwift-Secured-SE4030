@@ -1,3 +1,4 @@
+import http from '../api/http';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,9 +11,7 @@ const OrderConfirmation = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/orders/${orderId}`);
-        if (!response.ok) throw new Error('Failed to fetch order details');
-        const data = await response.json();
+        const { data } = await http.get(`http://localhost:5000/api/orders/${orderId}`);
         setOrderDetails(data);
       } catch (error) {
         console.error('Error fetching order details:', error);

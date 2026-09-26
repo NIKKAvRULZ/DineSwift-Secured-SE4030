@@ -17,6 +17,7 @@ function controller() {
             if (name === '../models/User') return User;
             if (name === 'bcryptjs') return { hash: async () => 'test-password-hash' };
             if (name === 'jsonwebtoken') return {};
+            if (name === '../security/authSession') return { establishSession: (res, user) => ({ name: user.name, role: user.role }) };
             throw new Error(`Unexpected dependency: ${name}`);
         }
     };

@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaShoppingCart, FaMotorcycle, FaClipboardList, FaTasks, FaUserCircle, FaSearch, FaBars, FaTimes, FaUtensils, FaUser, FaSignOutAlt  } from 'react-icons/fa';
-import axios from 'axios';
+import axios from '../api/http';
 
 
 const Navbar = () => {
@@ -82,7 +82,7 @@ const Navbar = () => {
   const fetchDriverStatus = async () => {
     try {
       const response = await axios.get('http://localhost:5004/api/delivery/driver-status', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { }
       });
       setDriverStatus(response.data.status);
     } catch (err) {
@@ -95,7 +95,7 @@ const Navbar = () => {
       const newStatus = driverStatus === 'online' ? 'offline' : 'online';
       await axios.put('http://localhost:5004/api/delivery/driver-status', 
         { status: newStatus },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }}
+        { headers: { }}
       );
       setDriverStatus(newStatus);
     } catch (err) {
@@ -124,8 +124,8 @@ const Navbar = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try { await logout(); } catch { window.alert('Sign out failed. Please try again.'); return; }
     setIsDropdownOpen(false);
     navigate('/');
   };

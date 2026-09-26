@@ -1,3 +1,4 @@
+import http from '../api/http';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -49,20 +50,16 @@ const PremiumFoodDeliveryCheckout = () => {
 
   const handlePayNow = async () => {
     try {
-      const response = await fetch("http://localhost:5002/api/payments/create-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await http.post("http://localhost:5002/api/payments/create-payment", {
           name: orderItems[0].name, // Use first item’s name
           price: calculateTotal().total, // Total amount
           quantity: 1, // Hardcoded, modify if needed
           image: orderItems[0].image, // First item’s image
           id: "ORDER123", // Replace with actual order ID
           userId: "USER456", // Replace with actual user ID
-        }),
       });
   
-      const data = await response.json();
+      const data = response.data;
   
       if (data.url) {
         window.location.href = data.url; // Redirect to Stripe Checkout

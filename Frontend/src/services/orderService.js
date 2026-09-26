@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from '../api/http';
 
 const API_URL = 'http://localhost:5003/api';
 
 const orderService = {
   createOrder: async (orderData) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.post(`${API_URL}/orders`, orderData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -17,9 +17,9 @@ const orderService = {
 
   getAllOrders: async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/orders`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -29,9 +29,9 @@ const orderService = {
 
   getOrderById: async (orderId) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/orders/${orderId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -41,12 +41,12 @@ const orderService = {
 
   updateOrderStatus: async (orderId, status) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.patch(
         `${API_URL}/orders/${orderId}/status`,
         { status },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         }
       );
       return response.data;
@@ -57,12 +57,12 @@ const orderService = {
 
   cancelOrder: async (orderId) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.post(
         `${API_URL}/orders/${orderId}/cancel`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         }
       );
       return response.data;
@@ -75,16 +75,14 @@ const orderService = {
   updateOrderRating: async (orderId, ratingData) => {
     try {
       console.log(`Submitting rating for order ${orderId}:`, ratingData);
-      
-      const token = localStorage.getItem('token');
-      
+
       // Use axios directly to the specific endpoint with more explicit settings
       const response = await axios({
         method: 'post',
         url: `${API_URL}/orders/${orderId}/rating`,
         data: ratingData,
         headers: { 
-          'Authorization': `Bearer ${token}`,
+
           'Content-Type': 'application/json'
         },
         validateStatus: function (status) {

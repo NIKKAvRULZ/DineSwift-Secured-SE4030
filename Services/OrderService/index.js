@@ -1,3 +1,4 @@
+import session from './security/session.cjs';
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -9,7 +10,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({origin: session.origins(), credentials: true}));
 app.use(helmet());
 app.use(express.json());
 

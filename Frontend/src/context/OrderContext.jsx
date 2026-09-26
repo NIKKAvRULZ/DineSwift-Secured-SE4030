@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../api/http';
 import { useAuth } from './AuthContext';
 
 const OrderContext = createContext(null);
@@ -17,9 +17,9 @@ export const OrderProvider = ({ children }) => {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get('http://localhost:5003/api/orders', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       setOrders(response.data);
       
@@ -35,9 +35,9 @@ export const OrderProvider = ({ children }) => {
 
   const createOrder = async (orderData) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.post('http://localhost:5003/api/orders', orderData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       setOrders(prev => [...prev, response.data]);
       setActiveOrder(response.data);
@@ -49,11 +49,11 @@ export const OrderProvider = ({ children }) => {
 
   const updateOrderStatus = async (orderId, status) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.patch(
         `http://localhost:5003/api/orders/${orderId}/status`,
         { status },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { } }
       );
       
       setOrders(prev => 
@@ -74,9 +74,9 @@ export const OrderProvider = ({ children }) => {
 
   const getOrderDetails = async (orderId) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`http://localhost:5003/api/orders/${orderId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return { success: true, order: response.data };
     } catch (error) {
@@ -86,11 +86,11 @@ export const OrderProvider = ({ children }) => {
 
   const updateOrderRating = async (orderId, ratingData) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.post(
         `http://localhost:5003/api/orders/${orderId}/rating`,
         ratingData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { } }
       );
       
       setOrders(prev => 
@@ -107,11 +107,11 @@ export const OrderProvider = ({ children }) => {
 
   const cancelOrder = async (orderId) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.patch(
         `http://localhost:5003/api/orders/${orderId}/status`,
         { status: 'Cancelled' },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { } }
       );
       
       setOrders(prev => 

@@ -1,14 +1,14 @@
 import axios from 'axios';
-
-// The manager's token is memory-only and is cleared when the page is refreshed.
-let accessToken = null;
-export const setAccessToken = token => { accessToken = token; };
+export const authURL = process.env.REACT_APP_AUTH_URL || 'http://localhost:5000';
+const restaurantURL = process.env.REACT_APP_RESTAURANT_URL || 'http://localhost:5002';
 const api = axios.create();
 api.interceptors.request.use(config => {
     const url = new URL(config.url, window.location.origin);
-    if (url.origin === 'http://localhost:5002' && !['get', 'head', 'options'].includes(config.method)) {
-        if (!accessToken) throw new Error('Please sign in before making changes');
-        config.headers.Authorization = `Bearer ${accessToken}`;
+    const origins = { 'http://localhost:5000': authURL, 'http://localhost:5002': restaurantURL };
+    if (origins[url.origin] || [authURL, restaurantURL].includes(url.origin)) {
+        config.url = (origins[url.origin] || url.origin) + url.pathname + url.search;
+        config.withCredentials = true;
+        config.headers['X-DineSwift-Request'] = '1';
     }
     return config;
 });

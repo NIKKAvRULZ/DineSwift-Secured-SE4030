@@ -1,16 +1,15 @@
-import axios from "axios";
+import axios from './http';
 
 const BASE_URL = "http://localhost:5005/api/";
 
 const paymentService = {
 
-  createStripeCheckoutSession: async (stripeData, token) => {
+  createStripeCheckoutSession: async (stripeData) => {
     try {
       const response = await axios.post(`${BASE_URL}payment/stripe/create-checkout-session`, stripeData, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          }
       });
       return response.data;
     } catch (error) {

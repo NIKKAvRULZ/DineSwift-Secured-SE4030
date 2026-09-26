@@ -6,6 +6,7 @@ const passport = require("passport"); // Add this
 const connectDB = require("./config/db");
 
 dotenv.config();
+if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required');
 require("./config/passport"); // Load passport configuration
 
 const authRoutes = require("./routes/authRoutes");
@@ -16,6 +17,7 @@ app.use(
   cors({
     origin: [process.env.FRONTEND_URL || "http://localhost:5173",
       process.env.RESTAURANT_MANAGER_URL].filter(Boolean),
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
 );

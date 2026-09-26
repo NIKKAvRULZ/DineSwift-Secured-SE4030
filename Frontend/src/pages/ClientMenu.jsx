@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import axios from '../api/http';
 import defaultItemImage from '../assets/placeholder-menu.png';
 import defaultResImage from '../assets/placeholder-restaurant.png';
 import ImageCarousel from '../components/ImageCarousel';

@@ -134,7 +134,7 @@ const Checkout = () => {
 
       console.log("Order data being sent:", orderData);
 
-      const response = await orderService.createOrder(orderData, user.token);
+      const response = await orderService.createOrder(orderData);
       setIsOrderPlaced(true);
       setShowConfirmation(true);
 
@@ -198,7 +198,7 @@ const Checkout = () => {
         }
       };
 
-      const orderResponse = await orderService.createOrder(orderData, user.token);
+      const orderResponse = await orderService.createOrder(orderData);
       const createdOrder = orderResponse;
 
       if (!createdOrder || !createdOrder._id) {
@@ -226,7 +226,7 @@ const Checkout = () => {
         }
       };
 
-      const stripeResponse = await paymentService.createStripeCheckoutSession(stripeData, user.token);
+      const stripeResponse = await paymentService.createStripeCheckoutSession(stripeData);
 
       if (stripeResponse.success) {
         // Store the phone number in local storage

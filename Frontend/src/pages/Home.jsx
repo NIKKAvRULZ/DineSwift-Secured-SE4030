@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, useScroll, useTransform } from 'framer-motion';  // Added useScroll and useTransform
 import { Typewriter } from 'react-simple-typewriter';
-import axios from 'axios';
+import axios from '../api/http';
 import { useRef } from 'react';
 
 const Home = () => {

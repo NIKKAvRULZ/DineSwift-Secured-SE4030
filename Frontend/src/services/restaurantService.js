@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from '../api/http';
 
 const API_URL = 'http://localhost:5002/api/restaurants';
 
 const restaurantService = {
   getAllRestaurants: async (filters = {}) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/restaurants`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { },
         params: filters
       });
       return response.data;
@@ -18,9 +18,9 @@ const restaurantService = {
 
   getRestaurantById: async (id) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/restaurants/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -30,9 +30,9 @@ const restaurantService = {
 
   getRestaurantMenu: async (restaurantId) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/restaurants/${restaurantId}/menu`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { }
       });
       return response.data;
     } catch (error) {
@@ -42,9 +42,9 @@ const restaurantService = {
 
   searchRestaurants: async (searchTerm, filters = {}) => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get(`${API_URL}/restaurants/search`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { },
         params: { q: searchTerm, ...filters }
       });
       return response.data;

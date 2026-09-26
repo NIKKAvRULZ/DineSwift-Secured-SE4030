@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { gatewayURL } from '../api/http';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { Typewriter } from 'react-simple-typewriter';
@@ -11,20 +12,17 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, checkAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Capture token issued after Google OAuth callback redirect
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const oauthToken = params.get('token');
-
-    if (oauthToken) {
-      localStorage.setItem('token', oauthToken);
-      navigate('/', { replace: true });
-    }
-  }, [location, navigate]);
+    if (params.has('token')) { navigate('/login', { replace: true }); return; }
+    if (params.get('oauth') === 'success') {
+      checkAuth().then(user => user ? navigate('/', { replace: true }) : setError('Unable to verify sign-in'));
+    } else if (params.has('error')) setError('Google sign-in failed. Please try again.');
+  }, [location.search, navigate, checkAuth]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +50,7 @@ const Login = () => {
 
   const handleGoogleSignIn = () => {
     // Initiate OAuth 2.0 / OpenID Connect authorization code flow
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    window.location.href = `${gatewayURL}/api/auth/google`;
   };
 
   // Animation variants

@@ -1,12 +1,8 @@
-import axios from 'axios';
+import axios from '../api/http';
 
 const API_BASE_URL = 'http://localhost:5002/api';
 
-function authConfig() {
-  const token = localStorage.getItem('token');
-  if (!token || token === 'undefined') throw new Error('Please sign in to submit a review');
-  return { headers: { Authorization: `Bearer ${token}` } };
-}
+function authConfig() { return {}; }
 
 const menuService = {
   // Get restaurant menu items

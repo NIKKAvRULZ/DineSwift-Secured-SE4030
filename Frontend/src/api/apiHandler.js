@@ -1,38 +1,7 @@
-import axios from 'axios';
+import axios from './http';
 
 const API_BASE_URL = 'http://localhost:5002/api';
 const TIMEOUT = 5000; // 5 seconds timeout for requests
-
-// Set up axios debug interceptors
-axios.interceptors.request.use(request => {
-  console.log('Starting Request:', {
-    url: request.url,
-    method: request.method,
-    data: request.data,
-    headers: request.headers
-  });
-  return request;
-});
-
-axios.interceptors.response.use(
-  response => {
-    console.log('Response:', {
-      status: response.status,
-      data: response.data
-    });
-    return response;
-  },
-  error => {
-    console.log('Response Error:', {
-      message: error.message,
-      response: error.response ? {
-        status: error.response.status,
-        data: error.response.data
-      } : 'No response'
-    });
-    return Promise.reject(error);
-  }
-);
 
 /**
  * Check if the server is reachable
@@ -102,7 +71,7 @@ export const checkServerConnectivity = async () => {
  * @param {object} params Rating parameters
  * @returns {Promise<object>} API response
  */
-export const submitRating = async ({ restaurantId, menuItemId, rating, userId, token }) => {
+export const submitRating = async ({ restaurantId, menuItemId, rating, userId }) => {
   if (!restaurantId || !menuItemId || !rating) {
     throw new Error('Missing required parameters');
   }
@@ -135,7 +104,7 @@ export const submitRating = async ({ restaurantId, menuItemId, rating, userId, t
         },
         {
           headers: {
-            'Authorization': token ? `Bearer ${token}` : undefined,
+
             'Content-Type': 'application/json',
           },
           timeout: 5000 + (attempt * 1000) // 5s timeout + 1s per retry

@@ -1,17 +1,9 @@
+import session from '../security/session.cjs';
 import jwt from "jsonwebtoken";
 
 export const authenticateToken = (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        success: false,
-        message: "Access token is required"
-      });
-    }
-
-    const token = authHeader.split(" ")[1];
+    const token = session.accessToken(req);
 
     if (!token) {
       return res.status(401).json({
@@ -22,12 +14,12 @@ export const authenticateToken = (req, res, next) => {
 
     const decodedUser = jwt.verify(
       token,
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET, { algorithms: ['HS256'] }
     );
 
     req.user = decodedUser;
 
-    next();
+    return session.csrfProtection()(req, res, next);
   } catch (error) {
     return res.status(401).json({
       success: false,

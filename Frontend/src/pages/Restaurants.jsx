@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom'; // import useLocation
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import axios from '../api/http';
 import RestaurantCard from '../components/RestaurantCard';
 
 // Toast component
@@ -104,9 +104,9 @@ const Restaurants = ({ isClientView = false }) => {
       if (isClientView) {
         response = await axios.get('http://localhost:5002/api/restaurants');
       } else {
-        const token = localStorage.getItem('token');
+
         response = await axios.get('http://localhost:5002/api/restaurants', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { }
         });
       }
       
