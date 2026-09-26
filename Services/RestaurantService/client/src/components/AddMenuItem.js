@@ -23,7 +23,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import axios from '../api';
+import axios from 'axios';
 
 const apiUrl = 'http://localhost:5002';
 

@@ -6,7 +6,6 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const restaurantRoutes = require("./routes/restaurantRoutes");
-const { authenticateToken } = require("./middleware/authMiddleware");
 
 const app = express();
 const PORT = process.env.PORT || 5002;
@@ -16,8 +15,7 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL || "http://localhost:5173",
-      process.env.RESTAURANT_MANAGER_URL].filter(Boolean),
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
 );
@@ -69,11 +67,6 @@ connectDB()
   });
 
 // Check database connection on every request
-// Reject unauthenticated writes before checking database availability.
-app.use('/api', (req, res, next) => {
-  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
-  return authenticateToken(req, res, next);
-});
 app.use((req, res, next) => {
   if (mongoose.connection.readyState !== 1) {
     return res.status(500).json({

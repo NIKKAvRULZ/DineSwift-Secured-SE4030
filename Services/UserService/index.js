@@ -14,8 +14,7 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL || "http://localhost:5173",
-      process.env.RESTAURANT_MANAGER_URL].filter(Boolean),
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
 );

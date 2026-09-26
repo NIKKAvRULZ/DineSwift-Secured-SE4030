@@ -7,7 +7,7 @@ import {
     MenuItem,
     Stack
 } from '@mui/material';
-import axios from '../api';
+import axios from 'axios';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 

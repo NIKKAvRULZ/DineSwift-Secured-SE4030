@@ -1,8 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken, requireRestaurantAdmin, requireOwner } = require('../middleware/authMiddleware');
-const restaurantOwner = [authenticateToken, requireRestaurantAdmin, requireOwner('restaurant')];
-const menuOwner = [authenticateToken, requireRestaurantAdmin, requireOwner('menu')];
 const {
     getAllRestaurants,
     addRestaurant,
@@ -59,10 +56,10 @@ router.get('/ping', (req, res) => {
 // Restaurant routes
 router.get('/restaurants', getAllRestaurants);
 router.get('/cuisines', getCuisineTypes);
-router.post('/restaurants', authenticateToken, requireRestaurantAdmin, addRestaurant);
+router.post('/restaurants', addRestaurant);
 router.get('/restaurants/:id', getRestaurant);
-router.put('/restaurants/:id', restaurantOwner, updateRestaurant);
-router.delete('/restaurants/:id', restaurantOwner, deleteRestaurant);
+router.put('/restaurants/:id', updateRestaurant);
+router.delete('/restaurants/:id', deleteRestaurant);
 
 // Error handling middleware specifically for image URL issues
 const handleImageUrlErrors = (err, req, res, next) => {
@@ -77,7 +74,7 @@ const handleImageUrlErrors = (err, req, res, next) => {
 router.use(handleImageUrlErrors);
 
 // Menu item routes with proper error catching
-router.post('/restaurants/:restaurantId/menu-items', restaurantOwner, (req, res, next) => {
+router.post('/restaurants/:restaurantId/menu-items', (req, res, next) => {
     try {
         // Validate image URLs if present
         if (req.body.image) {
@@ -99,12 +96,12 @@ router.post('/restaurants/:restaurantId/menu-items', restaurantOwner, (req, res,
 router.get('/menu-items', getAllMenuItems);
 router.get('/restaurants/:restaurantId/menu-items', getRestaurantMenuItems);
 router.get('/menu-items/:id', getMenuItem);
-router.put('/menu-items/:id', menuOwner, updateMenuItem);
-router.delete('/menu-items/:id', menuOwner, deleteMenuItem);
+router.put('/menu-items/:id', updateMenuItem);
+router.delete('/menu-items/:id', deleteMenuItem);
 
 // Rating and comment routes
-router.post('/restaurants/:restaurantId/menu-items/:id/rate', authenticateToken, rateMenuItem);
-router.post('/restaurants/:restaurantId/menu-items/:id/comments', authenticateToken, addComment);
+router.post('/restaurants/:restaurantId/menu-items/:id/rate', rateMenuItem);
+router.post('/restaurants/:restaurantId/menu-items/:id/comments', addComment);
 router.get('/restaurants/:restaurantId/menu-items/:id/comments', getComments);
 
 module.exports = router;

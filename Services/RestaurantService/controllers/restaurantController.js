@@ -1,14 +1,6 @@
 const Restaurant = require('../models/Restaurant');
 const MenuItem = require('../models/MenuItem');
 
-// Ownership and relationship fields are controlled by the server, never the request.
-const editableFields = ['name', 'cuisine', 'image', 'rating', 'deliveryTime', 'minOrder',
-    'isOpen', 'address', 'location', 'operatingHours'];
-function restaurantFields(body) {
-    return Object.fromEntries(editableFields.filter(key => Object.hasOwn(body, key))
-        .map(key => [key, body[key]]));
-}
-
 // Get all restaurants with optional search and cuisine filter
 const getAllRestaurants = async (req, res) => {
     try {
@@ -104,8 +96,7 @@ const getRestaurant = async (req, res) => {
 const addRestaurant = async (req, res) => {
     try {
         const restaurantData = {
-            ...restaurantFields(req.body),
-            owner: req.user.id,
+            ...req.body,
             rating: req.body.rating || 0 // Ensure rating has a default value
         };
         
@@ -123,7 +114,7 @@ const updateRestaurant = async (req, res) => {
         console.log('Updating restaurant with data:', req.body);
 
         const updateData = {
-            ...restaurantFields(req.body),
+            ...req.body,
             rating: req.body.rating !== undefined ? req.body.rating : 0 // Ensure rating is included
         };
 

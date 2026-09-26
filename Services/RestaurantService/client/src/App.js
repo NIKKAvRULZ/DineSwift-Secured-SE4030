@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import { Button } from '@mui/material';
-import ManagerLogin from './components/ManagerLogin';
-import { setAccessToken } from './api';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 
@@ -15,14 +12,11 @@ import AddMenuItem from './components/AddMenuItem';
 import EditMenuItem from './components/EditMenuItem';
 
 function App() {
-    const [signedIn, setSignedIn] = useState(false);
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Router>
                 <Layout>
-                    {signedIn ? <Button onClick={() => { setAccessToken(null); setSignedIn(false); }}>Sign out / switch account</Button>
-                        : <ManagerLogin onLogin={() => setSignedIn(true)} />}
                     <Routes>
                         <Route path="/" element={<RestaurantList />} />
                         <Route path="/restaurant/:id" element={<RestaurantDetail />} />

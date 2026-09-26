@@ -2,12 +2,6 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:5002/api';
 
-function authConfig() {
-  const token = localStorage.getItem('token');
-  if (!token || token === 'undefined') throw new Error('Please sign in to submit a review');
-  return { headers: { Authorization: `Bearer ${token}` } };
-}
-
 const menuService = {
   // Get restaurant menu items
   getMenuItems: async (restaurantId) => {
@@ -37,15 +31,14 @@ const menuService = {
       console.log('Submitting rating:', { restaurantId, menuItemId, rating });
       const response = await axios.post(
         `${API_BASE_URL}/restaurants/${restaurantId}/menu-items/${menuItemId}/rate`,
-        { rating },
-        authConfig()
+        { rating }
       );
       
       console.log('Rating submitted successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error submitting rating:', error);
-      throw error.response?.data || { message: error.message || 'Failed to submit rating' };
+      throw error.response?.data || { message: 'Failed to submit rating' };
     }
   },
 
@@ -55,14 +48,13 @@ const menuService = {
       console.log('Adding comment:', { restaurantId, menuItemId, comment });
       const response = await axios.post(
         `${API_BASE_URL}/restaurants/${restaurantId}/menu-items/${menuItemId}/comments`,
-        { text: comment.text },
-        authConfig()
+        comment
       );
       console.log('Comment added successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error adding comment:', error);
-      throw error.response?.data || { message: error.message || 'Failed to add comment' };
+      throw error.response?.data || { message: 'Failed to add comment' };
     }
   },
 

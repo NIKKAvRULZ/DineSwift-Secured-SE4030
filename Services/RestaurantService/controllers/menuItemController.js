@@ -256,8 +256,7 @@ const deleteMenuItem = async (req, res) => {
 const rateMenuItem = async (req, res) => {
     try {
         const { restaurantId, id } = req.params;
-        const { rating } = req.body;
-        const userId = req.user.id;
+        const { rating, userId = 'anonymous' } = req.body;
         
         // Validate rating
         const numericRating = typeof rating === 'number' ? rating : parseFloat(rating);
@@ -328,11 +327,10 @@ const rateMenuItem = async (req, res) => {
 const addComment = async (req, res) => {
     try {
         const { restaurantId, id } = req.params;
-        const { text } = req.body;
-        const userId = req.user.id;
+        const { text, userId } = req.body;
 
-        if (!text) {
-            return res.status(400).json({ message: 'Comment text is required' });
+        if (!text || !userId) {
+            return res.status(400).json({ message: 'Comment text and user ID are required' });
         }
 
         const menuItem = await MenuItem.findOne({ 

@@ -4,11 +4,7 @@ const bcrypt = require('bcryptjs');
 
 exports.register = async (req, res) => {
     try {
-        const {name, email, password} = req.body;
-        if (req.body.role !== undefined && req.body.role !== 'customer') {
-            return res.status(400).json({ message: 'Privileged roles cannot be self-registered' });
-        }
-        const role = 'customer';
+        const {name, email, password, role} = req.body;
         const hashPassword = await bcrypt.hash(password, 10);
         const user = new User({name, email, password: hashPassword, role});
         await user.save();

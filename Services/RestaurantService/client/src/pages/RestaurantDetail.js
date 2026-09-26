@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import axios from '../api';
+import axios from 'axios';
 import { Box, Typography, Grid } from '@mui/material';
 import { Rating } from '@mui/material';
 import SearchBar from '../components/SearchBar';
